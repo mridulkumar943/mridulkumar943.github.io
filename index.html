@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ComicVerse Hub - Home</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar sticky">
+        <div class="nav-container">
+            <div class="logo">
+                <h1>ComicVerse Hub</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="browse.html">Browse</a></li>
+                <li><a href="cart.html" class="cart-link">Cart (<span id="cart-count">0</span>)</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Carousel -->
+    <section class="hero-section">
+        <div class="carousel-container">
+            <div class="carousel-slide active">
+                <div class="carousel-content">
+                    <h2>The Dark Knight Returns</h2>
+                    <p>Experience the legendary tale of Batman's return</p>
+                    <a href="comic-detail.html?id=001" class="btn-primary">Explore Now</a>
+                </div>
+                <div class="carousel-image" style="background-image: url('https://dummyimage.com/1200x600/0a0a0a/ff6b35.png&text=The+Dark+Knight+Returns');"></div>
+            </div>
+            <div class="carousel-slide">
+                <div class="carousel-content">
+                    <h2>Spider-Man: No Way Home</h2>
+                    <p>Multiverse adventure awaits</p>
+                    <a href="comic-detail.html?id=002" class="btn-primary">Explore Now</a>
+                </div>
+                <div class="carousel-image" style="background-image: url('https://dummyimage.com/1200x600/e62429/ffffff.png&text=Spider-Man+No+Way+Home');"></div>
+            </div>
+            <div class="carousel-slide">
+                <div class="carousel-content">
+                    <h2>Watchmen</h2>
+                    <p>The groundbreaking graphic novel</p>
+                    <a href="comic-detail.html?id=003" class="btn-primary">Explore Now</a>
+                </div>
+                <div class="carousel-image" style="background-image: url('https://dummyimage.com/1200x600/ffd700/000000.png&text=Watchmen');"></div>
+            </div>
+            <button class="carousel-btn prev" onclick="changeSlide(-1)">&#10094;</button>
+            <button class="carousel-btn next" onclick="changeSlide(1)">&#10095;</button>
+            <div class="carousel-dots">
+                <span class="dot active" onclick="currentSlide(1)"></span>
+                <span class="dot" onclick="currentSlide(2)"></span>
+                <span class="dot" onclick="currentSlide(3)"></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- New Releases Section -->
+    <section class="content-section">
+        <div class="container">
+            <h2 class="section-title">New Releases</h2>
+            <div class="comics-grid" id="new-releases">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Popular Series Section -->
+    <section class="content-section">
+        <div class="container">
+            <h2 class="section-title">Popular Series</h2>
+            <div class="comics-grid" id="popular-series">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Publisher Spotlights -->
+    <section class="content-section">
+        <div class="container">
+            <h2 class="section-title">Publisher Spotlights</h2>
+            <div class="publisher-grid">
+                <div class="publisher-card" onclick="window.location.href='browse.html?publisher=Marvel'">
+                    <div class="publisher-logo marvel">Marvel</div>
+                    <p>Explore the Marvel Universe</p>
+                </div>
+                <div class="publisher-card" onclick="window.location.href='browse.html?publisher=DC Comics'">
+                    <div class="publisher-logo dc">DC Comics</div>
+                    <p>Discover DC Heroes</p>
+                </div>
+                <div class="publisher-card" onclick="window.location.href='browse.html?publisher=Image Comics'">
+                    <div class="publisher-logo image">Image Comics</div>
+                    <p>Independent Excellence</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>ComicVerse Hub</h3>
+                    <p>Your ultimate destination for comic books</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="browse.html">Browse</a></li>
+                        <li><a href="cart.html">Cart</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Follow Us</h4>
+                    <div class="social-links">
+                        <a href="#">Twitter</a>
+                        <a href="#">Facebook</a>
+                        <a href="#">Instagram</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 ComicVerse Hub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="comics.js"></script>
+    <script src="script.js"></script>
+    <script>
+        // Carousel functionality
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.carousel-slide');
+        const dots = document.querySelectorAll('.dot');
+
+        function showSlide(index) {
+            if (index >= slides.length) currentSlideIndex = 0;
+            if (index < 0) currentSlideIndex = slides.length - 1;
+            
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+            
+            slides[currentSlideIndex].classList.add('active');
+            dots[currentSlideIndex].classList.add('active');
+        }
+
+        function changeSlide(direction) {
+            currentSlideIndex += direction;
+            showSlide(currentSlideIndex);
+        }
+
+        function currentSlide(index) {
+            currentSlideIndex = index - 1;
+            showSlide(currentSlideIndex);
+        }
+
+        // Auto-advance carousel
+        setInterval(() => changeSlide(1), 5000);
+
+        // Load new releases and popular series
+        document.addEventListener('DOMContentLoaded', () => {
+            loadNewReleases();
+            loadPopularSeries();
+            updateCartCount();
+        });
+
+        function loadNewReleases() {
+            const container = document.getElementById('new-releases');
+            const newReleases = getNewReleases();
+            container.innerHTML = newReleases.map(comic => createComicCard(comic)).join('');
+        }
+
+        function loadPopularSeries() {
+            const container = document.getElementById('popular-series');
+            const popular = getPopularComics();
+            container.innerHTML = popular.map(comic => createComicCard(comic)).join('');
+        }
+    </script>
+</body>
+</html>
+

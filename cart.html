@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ComicVerse Hub - Shopping Cart</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar sticky">
+        <div class="nav-container">
+            <div class="logo">
+                <h1>ComicVerse Hub</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="browse.html">Browse</a></li>
+                <li><a href="cart.html" class="active cart-link">Cart (<span id="cart-count">0</span>)</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Cart Header -->
+    <section class="cart-header">
+        <div class="container">
+            <h1>Shopping Cart</h1>
+        </div>
+    </section>
+
+    <!-- Cart Content -->
+    <section class="cart-content">
+        <div class="container">
+            <div id="cart-items-container">
+                <div class="loading">Loading cart...</div>
+            </div>
+            <div class="cart-summary" id="cart-summary">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>ComicVerse Hub</h3>
+                    <p>Your ultimate destination for comic books</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="browse.html">Browse</a></li>
+                        <li><a href="cart.html">Cart</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Follow Us</h4>
+                    <div class="social-links">
+                        <a href="#">Twitter</a>
+                        <a href="#">Facebook</a>
+                        <a href="#">Instagram</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 ComicVerse Hub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeCheckoutModal()">&times;</span>
+            <h2>Thank You for Your Order!</h2>
+            <p>Your simulated order has been placed successfully.</p>
+            <p>This is a demo site - no actual purchase was made.</p>
+            <button class="btn-primary" onclick="clearCartAndRedirect()">Continue Shopping</button>
+        </div>
+    </div>
+
+    <script src="comics.js"></script>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCart();
+            updateCartCount();
+        });
+
+        function loadCart() {
+            const cart = getCart();
+            const container = document.getElementById('cart-items-container');
+            const summary = document.getElementById('cart-summary');
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-cart">
+                        <h2>Your cart is empty</h2>
+                        <p>Start adding comics to your cart!</p>
+                        <a href="browse.html" class="btn-primary">Browse Comics</a>
+                    </div>
+                `;
+                summary.innerHTML = '';
+                return;
+            }
+
+            let total = 0;
+            let itemsHtml = '';
+
+            cart.forEach(item => {
+                const comic = comicsData.find(c => c.id === item.id);
+                if (comic) {
+                    const itemTotal = comic.price * item.quantity;
+                    total += itemTotal;
+                    
+                    itemsHtml += `
+                        <div class="cart-item">
+                            <div class="cart-item-image">
+                                <a href="comic-detail.html?id=${comic.id}">
+                                    <img src="${comic.coverImage}" alt="${comic.title}">
+                                </a>
+                            </div>
+                            <div class="cart-item-info">
+                                <h3><a href="comic-detail.html?id=${comic.id}">${comic.title}</a></h3>
+                                <p class="cart-item-publisher">${comic.publisher}</p>
+                                <p class="cart-item-price">$${comic.price.toFixed(2)} each</p>
+                            </div>
+                            <div class="cart-item-quantity">
+                                <button class="qty-btn" onclick="updateQuantity('${comic.id}', ${item.quantity - 1})">-</button>
+                                <span class="qty-value">${item.quantity}</span>
+                                <button class="qty-btn" onclick="updateQuantity('${comic.id}', ${item.quantity + 1})">+</button>
+                            </div>
+                            <div class="cart-item-total">
+                                <span>$${itemTotal.toFixed(2)}</span>
+                            </div>
+                            <div class="cart-item-remove">
+                                <button class="remove-btn" onclick="removeFromCart('${comic.id}')" title="Remove">×</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            container.innerHTML = itemsHtml;
+
+            summary.innerHTML = `
+                <div class="summary-card">
+                    <h3>Order Summary</h3>
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span>$${total.toFixed(2)}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping:</span>
+                        <span>Free</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total:</span>
+                        <span>$${total.toFixed(2)}</span>
+                    </div>
+                    <button class="btn-checkout" onclick="checkout()">Checkout</button>
+                </div>
+            `;
+        }
+
+        function updateQuantity(comicId, newQuantity) {
+            if (newQuantity <= 0) {
+                removeFromCart(comicId);
+            } else {
+                const cart = getCart();
+                const item = cart.find(item => item.id === comicId);
+                if (item) {
+                    item.quantity = newQuantity;
+                    saveCart(cart);
+                    loadCart();
+                    updateCartCount();
+                }
+            }
+        }
+
+        function removeFromCart(comicId) {
+            removeItemFromCart(comicId);
+            loadCart();
+            updateCartCount();
+        }
+
+        function checkout() {
+            document.getElementById('checkout-modal').style.display = 'flex';
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkout-modal').style.display = 'none';
+        }
+
+        function clearCartAndRedirect() {
+            clearCart();
+            closeCheckoutModal();
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
+

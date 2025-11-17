@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ComicVerse Hub - Comic Details</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar sticky">
+        <div class="nav-container">
+            <div class="logo">
+                <h1>ComicVerse Hub</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="browse.html">Browse</a></li>
+                <li><a href="cart.html" class="cart-link">Cart (<span id="cart-count">0</span>)</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Comic Detail Section -->
+    <section class="comic-detail-section">
+        <div class="container">
+            <div id="comic-detail-content">
+                <div class="loading">Loading comic details...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>ComicVerse Hub</h3>
+                    <p>Your ultimate destination for comic books</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="browse.html">Browse</a></li>
+                        <li><a href="cart.html">Cart</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Follow Us</h4>
+                    <div class="social-links">
+                        <a href="#">Twitter</a>
+                        <a href="#">Facebook</a>
+                        <a href="#">Instagram</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 ComicVerse Hub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="comics.js"></script>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCartCount();
+            loadComicDetail();
+        });
+
+        function loadComicDetail() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const comicId = urlParams.get('id');
+            
+            if (!comicId) {
+                document.getElementById('comic-detail-content').innerHTML = 
+                    '<div class="error-message"><p>Comic not found. <a href="browse.html">Browse all comics</a></p></div>';
+                return;
+            }
+
+            const comic = comicsData.find(c => c.id === comicId);
+            
+            if (!comic) {
+                document.getElementById('comic-detail-content').innerHTML = 
+                    '<div class="error-message"><p>Comic not found. <a href="browse.html">Browse all comics</a></p></div>';
+                return;
+            }
+
+            const content = `
+                <div class="comic-detail-container">
+                    <div class="comic-cover-section">
+                        <div class="comic-cover-zoom">
+                            <img src="${comic.coverImage}" alt="${comic.title}" class="comic-cover-image">
+                        </div>
+                    </div>
+                    <div class="comic-info-section">
+                        <div class="comic-header">
+                            <span class="comic-publisher">${comic.publisher}</span>
+                            <h1 class="comic-title">${comic.title}</h1>
+                            <div class="comic-meta">
+                                <span class="comic-rating">⭐ ${comic.rating}</span>
+                                <span class="comic-pages">${comic.pages} pages</span>
+                            </div>
+                        </div>
+                        <div class="comic-price-section">
+                            <span class="price">$${comic.price.toFixed(2)}</span>
+                            <button class="btn-add-cart" onclick="addToCart('${comic.id}')">Add to Cart</button>
+                        </div>
+                        <div class="comic-details">
+                            <div class="detail-item">
+                                <strong>Character:</strong> ${comic.character}
+                            </div>
+                            <div class="detail-item">
+                                <strong>Genre:</strong> ${comic.genre}
+                            </div>
+                            <div class="detail-item">
+                                <strong>Release Date:</strong> ${new Date(comic.releaseDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                            </div>
+                        </div>
+                        <div class="comic-creators">
+                            <h3>Creators</h3>
+                            <div class="creators-list">
+                                <div class="creator-item">
+                                    <strong>Writer:</strong> ${comic.creators.writer}
+                                </div>
+                                <div class="creator-item">
+                                    <strong>Artist:</strong> ${comic.creators.artist}
+                                </div>
+                                <div class="creator-item">
+                                    <strong>Colorist:</strong> ${comic.creators.colorist}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="comic-synopsis">
+                            <h3>Synopsis</h3>
+                            <p>${comic.synopsis}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('comic-detail-content').innerHTML = content;
+            document.title = `${comic.title} - ComicVerse Hub`;
+        }
+
+        function addToCart(comicId) {
+            addItemToCart(comicId);
+            updateCartCount();
+            
+            // Show success message
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = 'Added!';
+            button.classList.add('added');
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.classList.remove('added');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
+
